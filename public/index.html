@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Social: ChatKlax</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    #root { display: flex; height: 100vh; }
+    video { object-fit: cover; }
+
+    /* Landing Screen Styles */
+    #landing-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1e2a44 0%, #141b29 100%);
+      display: flex;
+      flex-direction: column;
+      z-index: 10000;
+      overflow-y: auto;
+    }
+    .landing-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: transparent;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10001;
+    }
+    .landing-header .logo img {
+      height: 80px;
+      width: auto;
+    }
+    .landing-header nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+    .landing-header nav a:hover {
+      text-decoration: underline;
+    }
+    .landing-header .open-btn {
+      background: white;
+      color: #5865f2;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .landing-header .open-btn:hover {
+      background: #e0e0e0;
+    }
+    .landing-main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 2rem;
+    }
+    .landing-text {
+      flex: 1;
+      color: white;
+    }
+    .landing-text h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+    .landing-text p {
+      font-size: 1.25rem;
+      line-height: 1.5;
+      max-width: 500px;
+    }
+    .landing-preview {
+      flex: 1;
+      position: relative;
+      max-width: 600px;
+    }
+    .landing-preview .mockup-screen {
+      width: 100%;
+      height: 400px;
+      background: #2f3136;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+    }
+    .mockup-screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      pointer-events: none;
+    }
+    .mockup-screen .server-sidebar {
+      width: 60px;
+      background: linear-gradient(135deg, #4b0082, #8a2be2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      gap: 0.5rem;
+    }
+    .mockup-screen .server-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+    .mockup-screen .channel-sidebar {
+      width: 200px;
+      background: #2f2f5b;
+      padding: 1rem;
+    }
+    .mockup-screen .channel-header {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 1rem;
+    }
+    .mockup-screen .channel-item {
+      display: flex;
+      align-items: center;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+    .mockup-screen .channel-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #6a5acd;
+      margin-right: 0.5rem;
+      position: relative;
+    }
+    .mockup-screen .channel-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #32cd32;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      border: 2px solid #2f2f5b;
+    }
+    .mockup-screen .channel-name {
+      font-size: 0.8rem;
+    }
+    .mockup-screen .chat-area {
+      flex: 1;
+      background: #363966;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .mockup-screen .chat-header {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+    .mockup-screen .chat-message {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .mockup-screen .message-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #6a5acd;
+    }
+    .mockup-screen .message-content {
+      background: #5865f2;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      max-width: 60%;
+    }
+    .background-shapes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .background-shapes::before,
+    .background-shapes::after {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      filter: blur(50px);
+    }
+    .background-shapes::before {
+      top: 10%;
+      left: 10%;
+    }
+    .background-shapes::after {
+      bottom: 10%;
+      right: 10%;
+    }
+
+    /* Auth Screen Styles */
+    #auth-screen { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff, #00ffff); 
+      background-size: 400%; 
+      display: none; 
+      justify-content: center; 
+      align-items: center; 
+      z-index: 9999; 
+      animation: neonGlow 8s ease-in-out infinite;
+    }
+    @keyframes neonGlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .auth-container {
+      background: rgba(47, 49, 54, 0.9);
+      padding: 2rem;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+      color: white;
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+    }
+    .auth-container input {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      background: #3c3c7a;
+      border: none;
+      border-radius: 4px;
+      color: white;
+    }
+    .auth-container button {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      background: #6a5acd;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+    .auth-container button:hover {
+      background: #483d8b;
+    }
+    .auth-toggle {
+      text-align: center;
+      margin-top: 1rem;
+      color: #a9a9a9;
+    }
+    .auth-toggle span {
+      color: #00ffff;
+      cursor: pointer;
+    }
+    .auth-toggle span:hover {
+      text-decoration: underline;
+    }
+
+    /* Add Friend Modal Styles */
+    #add-friend-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+    .add-friend-container {
+      background: #2f3136;
+      padding: 1.5rem;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+      color: white;
+      position: relative;
+    }
+    .add-friend-container .search-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .add-friend-container input {
+      width: 100%;
+      padding: 0.5rem 0.5rem 0.5rem 2rem;
+      margin: 0.5rem 0;
+      background: #3c3c7a;
+      border: none;
+      border-radius: 4px;
+      color: white;
+    }
+    .add-friend-container .search-icon {
+      position: absolute;
+      left: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a9a9a9;
+      font-size: 1.2rem;
+    }
+    .add-friend-container .search-results {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+    .add-friend-container .search-result {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      background: #3c3c7a;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .add-friend-container .search-result button {
+      padding: 0.3rem 0.6rem;
+      background: #6a5acd;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+    .add-friend-container .search-result button:hover {
+      background: #483d8b;
+    }
+    .close-modal-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    #sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+    #server-sidebar {
+      background: linear-gradient(135deg, #4b0082, #8a2be2);
+      width: 70px;
+      flex-shrink: 0;
+      padding: 16px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    }
+    .server-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease;
+      border: 2px solid transparent;
+    }
+    .server-icon:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .server-icon.active {
+      transform: scale(1.1);
+      border: 2px solid #ffd700;
+      background: rgba(255, 255, 255, 0.3);
+    }
+    .voice-call-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      background: #32cd32;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .voice-call-btn:hover {
+      transform: scale(1.1);
+      background: #28a745;
+    }
+    .friend-item {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .friend-item:hover {
+      background-color: #4b0082;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #32cd32;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      border: 2px solid #2f3136;
+    }
+    .friend-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: #6a5acd;
+      margin-right: 8px;
+      position: relative;
+    }
+    .chat-message {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .chat-message .friend-avatar {
+      margin-right: 16px;
+    }
+    .message-content {
+      flex: 1;
+    }
+    .message-content .username {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    .message-content .timestamp {
+      font-size: 12px;
+      color: #a9a9a9;
+    }
+    #voice-call-popup {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 300px;
+      background: #2f2f5b;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+    }
+    .voice-call-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: #1c1c3d;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+    .call-participant {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #3c3c7a;
+      padding: 10px;
+      margin: 5px;
+      border-radius: 8px;
+    }
+    .call-controls {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      justify-content: center;
+    }
+    .call-controls button {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      color: white;
+      font-size: 14px;
+    }
+    .minimize-call-btn {
+      background: #6a5acd;
+    }
+    .minimize-call-btn:hover {
+      background: #483d8b;
+    }
+    .leave-call-btn {
+      background: #ff4500;
+    }
+    .leave-call-btn:hover {
+      background: #e03e00;
+    }
+    #voice-call-minimized {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #32cd32;
+      color: white;
+      padding: 10px;
+      border-radius: 50%;
+      display: none;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    #voice-call-minimized:hover {
+      background: #28a745;
+    }
+    @media (max-width: 640px) {
+      #sidebar { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        transform: translateX(-100%); 
+        z-index: 1000; 
+        height: 100%; 
+      }
+      #sidebar.open { transform: translateX(0); }
+      #server-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1001;
+        transform: translateX(-100%);
+      }
+      #server-sidebar.open {
+        transform: translateX(0);
+      }
+      #voice-call-popup {
+        width: 250px;
+        bottom: 10px;
+        right: 10px;
+      }
+      .landing-header nav a {
+        display: none;
+      }
+      .landing-main {
+        flex-direction: column;
+        padding: 6rem 1rem;
+      }
+      .landing-text h1 {
+        font-size: 2rem;
+      }
+      .landing-text p {
+        font-size: 1rem;
+      }
+      .landing-preview .mockup-screen {
+        height: 300px;
+      }
+      .mockup-screen .channel-sidebar {
+        width: 150px;
+      }
+      .mockup-screen .channel-header {
+        font-size: 0.8rem;
+      }
+      .mockup-screen .channel-name {
+        font-size: 0.7rem;
+      }
+      .mockup-screen .chat-header {
+        font-size: 0.8rem;
+      }
+      .mockup-screen .message-content {
+        font-size: 0.7rem;
+      }
+      .landing-header .logo img {
+        height: 30px;
+      }
+      .add-friend-container {
+        width: 90%;
+        padding: 1rem;
+      }
+    }
+    #avatar-preview {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #00ffff;
+    }
+    .video-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      color: white;
+      text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+    }
+    .interaction-buttons {
+      position: absolute;
+      right: 8px;
+      bottom: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .interaction-buttons button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 14px;
+      text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+    }
+    .interaction-buttons svg {
+      width: 32px;
+      height: 32px;
+    }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #6a5acd;
+      position: relative;
+    }
+    .user-avatar .plus-icon {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      width: 20px;
+      height: 20px;
+      background-color: #ff4500;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+    }
+
+    /* Estilos para los iconos de llamada */
+    .call-icon {
+      filter: grayscale(100%);
+      transition: filter 0.3s ease;
+    }
+    .call-icon:hover:not([disabled]),
+    .call-icon.active {
+      filter: grayscale(0%);
+    }
+    .call-icon[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <!-- Pantalla de inicio -->
+  <div id="landing-screen">
+    <div class="landing-header">
+      <div class="logo">
+        <img src="CHATKLAX.png" alt="ChatKlax Logo">
+      </div>
+      <nav>
+        <a href="#">Descargar</a>
+        <a href="#">Premium</a>
+        <a href="#">Descubrir</a>
+        <a href="#">Seguridad</a>
+        <a href="#">Soporte</a>
+        <a href="#">Blog</a>
+        <a href="#">Carreras</a>
+      </nav>
+      <a href="#" class="open-btn" onclick="showAuthScreen(true)">Abrir ChatKlax</a>
+    </div>
+    <div class="landing-main">
+      <div class="landing-text">
+        <h1>UN CHAT LLENO DE JUEGOS Y DIVERSIÓN</h1>
+        <p>ChatKlax es la plataforma perfecta para pasar un buen rato con amigos, crear comunidades y compartir momentos. Personaliza tu espacio para chatear, jugar y socializar.</p>
+      </div>
+      <div class="landing-preview">
+        <div class="mockup-screen">
+          <div class="server-sidebar">
+            <div class="server-icon">🌟</div>
+            <div class="server-icon">🎮</div>
+            <div class="server-icon">🎵</div>
+          </div>
+          <div class="channel-sidebar">
+            <div class="channel-header">Comunidades</div>
+            <div class="channel-item">
+              <div class="channel-avatar">
+                <div class="channel-status"></div>
+              </div>
+              <div class="channel-name">Persona1</div>
+            </div>
+            <div class="channel-item">
+              <div class="channel-avatar">
+                <div class="channel-status"></div>
+              </div>
+              <div class="channel-name">Patata</div>
+            </div>
+            <div class="channel-item">
+              <div class="channel-avatar">
+                <div class="channel-status"></div>
+              </div>
+              <div class="channel-name">PEIE</div>
+            </div>
+            <div class="channel-item">
+              <div class="channel-avatar">
+                <div class="channel-status"></div>
+              </div>
+              <div class="channel-name">YourUsername</div>
+            </div>
+          </div>
+          <div class="chat-area">
+            <div class="chat-header">Canal: General</div>
+            <div class="chat-message">
+              <div class="message-avatar"></div>
+              <div class="message-content">¡Bienvenido a ChatKlax!</div>
+            </div>
+            <div class="chat-message">
+              <div class="message-avatar"></div>
+              <div class="message-content">Conéctate y disfruta.</div>
+            </div>
+            <div class="chat-message">
+              <div class="message-avatar"></div>
+              <div class="message-content">¿Listo para chatear?</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="background-shapes"></div>
+  </div>
+
+  <!-- Pantalla de autenticación -->
+  <div id="auth-screen">
+    <div class="auth-container">
+      <h2 id="auth-title" class="text-2xl font-bold text-center mb-4">Iniciar Sesión</h2>
+      <div id="auth-error" class="text-red-500 text-center mb-4 hidden"></div>
+      <input id="username" type="text" placeholder="Nombre de usuario" required>
+      <input id="password" type="password" placeholder="Contraseña" required>
+      <button id="auth-button" onclick="handleAuth()">Iniciar Sesión</button>
+      <div class="auth-toggle">
+        ¿No tienes cuenta? <span onclick="toggleAuthMode()">Regístrate</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para agregar amigo -->
+  <div id="add-friend-modal">
+    <div class="add-friend-container">
+      <button class="close-modal-btn" onclick="closeAddFriendModal()">×</button>
+      <h2 class="text-xl font-bold mb-4">Agregar Amigo</h2>
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input id="friend-search-input" type="text" placeholder="Buscar usuario..." oninput="searchUsers()">
+      </div>
+      <div id="search-results" class="search-results"></div>
+    </div>
+  </div>
+
+  <!-- Modal para llamada entrante -->
+  <div id="incoming-call-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[10000] hidden">
+    <div class="bg-[#2f3136] p-6 rounded-lg shadow-lg max-w-sm w-full text-white">
+      <p class="text-lg mb-4">Llamada entrante de <span id="caller-name"></span></p>
+      <div class="flex justify-center gap-4">
+        <button onclick="acceptCall()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Aceptar</button>
+        <button onclick="rejectCall()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Rechazar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interfaz de la llamada -->
+  <div id="call-interface" class="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-[9999] hidden">
+    <video id="remote-video" class="w-[400px] h-[300px] bg-black rounded-lg border-2 border-gray-700 mb-4 sm:w-[300px] sm:h-[200px]" autoplay playsinline></video>
+    <video id="local-video" class="absolute bottom-4 right-4 w-[150px] h-[100px] bg-black rounded-lg border-2 border-gray-700 sm:w-[100px] sm:h-[75px]" autoplay playsinline muted></video>
+    <button id="end-call-btn" onclick="endCall()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mt-4">Finalizar Llamada</button>
+  </div>
+
+  <!-- Aplicación principal -->
+  <div id="root" class="hidden">
+    <!-- Barra lateral de servidores -->
+    <div id="server-sidebar">
+      <div class="server-icon active" onclick="selectServer(1)">🌟</div>
+      <div class="server-icon" onclick="selectServer(2)">🎮</div>
+      <div class="server-icon" onclick="selectServer(3)">🎵</div>
+      <div class="voice-call-btn" onclick="joinVoiceCall()">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Barra lateral -->
+    <div id="sidebar" class="w-64 bg-[#2f2f5b] text-white flex flex-col sm:w-56">
+      <div class="flex items-center justify-between p-4 bg-[#1c1c3d]">
+        <h2 class="text-lg font-bold sm:text-base">Comunidades</h2>
+        <button class="text-purple-300 hover:text-white sm:text-sm" onclick="addFriend()">Nueva</button>
+      </div>
+      <div class="p-2">
+        <input type="text" placeholder="Busca en ChatKlax..." class="w-full p-2 bg-[#3c3c7a] rounded sm:p-1.5 sm:text-sm text-white">
+      </div>
+      <div id="server-channels" class="flex-1 overflow-y-auto">
+        <!-- Sección para amigos -->
+        <h3 class="px-4 py-2 text-purple-300 sm:text-sm">AMIGOS</h3>
+        <div id="friends-list"></div>
+      </div>
+      <div>
+        <h3 class="px-4 py-2 bg-[#1c1c3d] sm:text-sm">Personalización</h3>
+        <div class="px-4 py-2 sm:text-sm">
+          <label class="block mb-2 text-purple-300 sm:text-xs">Nombre de usuario</label>
+          <input id="display-name" type="text" value="Usuario" class="w-full p-2 bg-[#3c3c7a] rounded sm:p-1.5 sm:text-sm text-white" oninput="updateProfilePreview()">
+          
+          <label class="block mt-4 mb-2 text-purple-300 sm:text-xs">Pronombres</label>
+          <input id="pronouns" type="text" placeholder="Añade tus pronombres" class="w-full p-2 bg-[#3c3c7a] rounded sm:p-1.5 sm:text-sm text-white" oninput="updateProfilePreview()">
+          
+          <label class="block mt-4 mb-2 text-purple-300 sm:text-xs">Avatar</label>
+          <div class="flex space-x-2">
+            <input id="avatar-upload" type="file" accept="image/*" class="hidden" />
+            <button id="change-avatar-btn" class="p-2 bg-purple-600 rounded hover:bg-purple-700 sm:p-1.5 sm:text-sm">Cambiar avatar</button>
+            <button id="delete-avatar-btn" class="p-2 bg-gray-600 rounded hover:bg-gray-700 sm:p-1.5 sm:text-sm">Eliminar avatar</button>
+          </div>
+
+          <label class="block mt-4 mb-2 text-purple-300 sm:text-xs">Vista Previa</label>
+          <div class="flex items-center space-x-3 p-2 bg-[#3c3c7a] rounded">
+            <img id="avatar-preview" src="/default-avatar.png" alt="Avatar Preview">
+            <div>
+              <p id="preview-name" class="font-bold">Usuario</p>
+              <p id="preview-pronouns" class="text-purple-300 text-sm"></p>
+            </div>
+          </div>
+          <button onclick="logout()" class="mt-4 p-2 bg-red-600 rounded hover:bg-red-700 sm:p-1.5 sm:text-sm w-full">Cerrar Sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Área principal -->
+    <div class="flex-1 flex flex-col relative">
+      <!-- Botones para alternar vistas y menú hamburguesa -->
+      <div class="bg-[#2f2f5b] p-2 flex justify-center items-center space-x-2 sm:p-3">
+        <div class="flex items-center space-x-2">
+          <button onclick="showView('chat')" class="px-4 py-2 rounded bg-purple-600 text-white flex items-center space-x-1 sm:px-3 sm:py-1 sm:text-sm">
+            <svg class="w-8 h-8 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+            <span>Chat</span>
+          </button>
+          <button onclick="showView('feed')" class="px-4 py-2 rounded bg-gray-700 text-white flex items-center space-x-1 sm:px-3 sm:py-1 sm:text-sm">
+            <svg class="w-8 h-8 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Feed</span>
+          </button>
+          <button id="menu-button" class="sm:block hidden p-2 text-white" onclick="toggleSidebar()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Área de chat -->
+      <div id="chat-view" class="flex-1 bg-[#2f2f5b] text-white flex flex-col hidden">
+        <h2 id="channel-name" class="p-4 text-lg font-bold sm:text-base bg-[#1c1c3d] flex items-center justify-between">
+          Chat
+          <div id="call-buttons" class="flex items-center gap-2">
+            <button id="video-call-btn" class="call-icon" onclick="startCall(currentFriend.id, 'video')" disabled>
+              <svg class="w-6 h-6 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+            </button>
+            <button id="voice-call-btn" class="call-icon" onclick="startCall(currentFriend.id, 'voice')" disabled>
+              <svg class="w-6 h-6 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+              </svg>
+            </button>
+          </div>
+        </h2>
+        <div id="messages" class="flex-1 p-4 overflow-y-auto sm:p-3 bg-[#363966]"></div>
+        <div class="p-4 sm:p-3 bg-[#363966]">
+          <input
+            id="chat-input"
+            type="text"
+            class="w-full p-2 bg-[#3c3c7a] rounded sm:p-1.5 sm:text-sm"
+            placeholder="Escribe un mensaje..."
+            onkeypress="if(event.key === 'Enter') sendMessage()"
+          />
+        </div>
+      </div>
+
+      <!-- Feed de videos -->
+      <div id="feed-view" class="flex-1 bg-black overflow-y-auto">
+        <div class="p-4 bg-black sticky top-0 z-10 sm:p-3">
+          <input
+            id="search-input"
+            type="text"
+            class="w-full p-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 sm:p-1.5 sm:text-sm"
+            placeholder="Buscar videos..."
+            oninput="searchVideos()"
+          />
+        </div>
+        <div id="video-list">
+          <div class="h-screen flex flex-col justify-center relative snap-start" data-user="@Usuario1" data-description="Video corto #1">
+            <video src="https://www.w3schools.com/html/mov_bbb.mp4" class="w-full h-full" autoplay loop muted></video>
+            <div class="video-overlay">
+              <p class="font-bold">@Usuario1</p>
+              <p>Video corto #1</p>
+              <p class="text-sm mt-1">🎵 Sonido original - Usuario1</p>
+            </div>
+            <div class="interaction-buttons">
+              <div class="relative">
+                <div class="user-avatar">
+                  <div class="plus-icon">+</div>
+                </div>
+              </div>
+              <button>
+                <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span>123</span>
+              </button>
+              <button>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span>45</span>
+              </button>
+              <button>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+                </svg>
+                <span>34</span>
+              </button>
+            </div>
+          </div>
+          <div class="h-screen flex flex-col justify-center relative snap-start" data-user="@Usuario2" data-description="Video corto #2">
+            <video src="https://www.w3schools.com/html/mov_bbb.mp4" class="w-full h-full" autoplay loop muted></video>
+            <div class="video-overlay">
+              <p class="font-bold">@Usuario2</p>
+              <p>Video corto #2</p>
+              <p class="text-sm mt-1">🎵 Sonido original - Usuario2</p>
+            </div>
+            <div class="interaction-buttons">
+              <div class="relative">
+                <div class="user-avatar">
+                  <div class="plus-icon">+</div>
+                </div>
+              </div>
+              <button>
+                <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span>456</span>
+              </button>
+              <button>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span>78</span>
+              </button>
+              <button>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+                </svg>
+                <span>34</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Llamada de voz -->
+  <div id="voice-call-popup">
+    <div class="voice-call-header">
+      <h3>Llamada de Voz</h3>
+      <button onclick="minimizeCall()" class="text-white">Minimizar</button>
+    </div>
+    <div class="call-participant">
+      <div class="friend-avatar"></div>
+      <span>Amigo 1</span>
+    </div>
+    <div class="call-controls">
+      <button class="minimize-call-btn" onclick="minimizeCall()">Minimizar</button>
+      <button class="leave-call-btn" onclick="leaveCall()">Salir</button>
+    </div>
+  </div>
+  <div id="voice-call-minimized" onclick="restoreCall()">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+    </svg>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let currentFriend = null;
+    let ws = null;
+    let friendStatuses = {};
+    let peerConnection;
+    let localStream;
+    let remoteStream;
+    let currentCall = null;
+
+    const configuration = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+      ],
+    };
+
+    const incomingCallModal = document.getElementById('incoming-call-modal');
+    const callerNameSpan = document.getElementById('caller-name');
+    const callInterface = document.getElementById('call-interface');
+    const localVideo = document.getElementById('local-video');
+    const remoteVideo = document.getElementById('remote-video');
+    const videoCallBtn = document.getElementById('video-call-btn');
+    const voiceCallBtn = document.getElementById('voice-call-btn');
+
+    async function loadAvatar(userId) {
+      console.log(`Cargando avatar para userId: ${userId}`);
+      try {
+        const response = await fetch(`/api/user/${userId}`);
+        const user = await response.json();
+        if (user.avatar) {
+          document.getElementById('avatar-preview').src = user.avatar;
+        } else {
+          document.getElementById('avatar-preview').src = '/default-avatar.png';
+        }
+      } catch (error) {
+        console.error('Error al cargar el avatar:', error);
+      }
+    }
+
+    function showAuthScreen(loginMode) {
+      console.log('Mostrando pantalla de autenticación, modo login:', loginMode);
+      document.getElementById('landing-screen').style.display = 'none';
+      const authScreen = document.getElementById('auth-screen');
+      const authTitle = document.getElementById('auth-title');
+      const authButton = document.getElementById('auth-button');
+      const authToggle = document.getElementById('auth-toggle');
+
+      authScreen.style.display = 'flex';
+      if (loginMode) {
+        authTitle.textContent = 'Iniciar Sesión';
+        authButton.textContent = 'Iniciar Sesión';
+        authToggle.innerHTML = '¿No tienes cuenta? <span onclick="toggleAuthMode()">Regístrate</span>';
+      } else {
+        authTitle.textContent = 'Registrarse';
+        authButton.textContent = 'Registrarse';
+        authToggle.innerHTML = '¿Ya tienes cuenta? <span onclick="toggleAuthMode()">Inicia sesión</span>';
+      }
+    }
+
+    function toggleAuthMode() {
+      const authTitle = document.getElementById('auth-title').textContent;
+      console.log('Cambiando modo de autenticación a:', authTitle === 'Registrarse' ? 'Iniciar Sesión' : 'Registrarse');
+      showAuthScreen(authTitle === 'Registrarse');
+    }
+
+    async function handleAuth() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const authTitle = document.getElementById('auth-title').textContent;
+      const authError = document.getElementById('auth-error');
+
+      if (!username || !password) {
+        authError.textContent = 'Por favor, completa todos los campos.';
+        authError.style.display = 'block';
+        return;
+      }
+
+      authError.style.display = 'none';
+      authError.textContent = '';
+
+      console.log(`Intentando ${authTitle} para usuario: ${username}`);
+      const endpoint = authTitle === 'Iniciar Sesión' ? '/api/login' : '/api/register';
+      const body = authTitle === 'Iniciar Sesión' ? { username, password } : { username, password, displayName: username };
+
+      try {
+        const response = await fetch(`http://localhost:3000${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Error en la autenticación');
+        }
+
+        currentUser = data;
+        console.log('Usuario autenticado:', currentUser);
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('root').classList.remove('hidden');
+        document.getElementById('display-name').value = currentUser.displayName || currentUser.username;
+        updateProfilePreview();
+        await loadFriends();
+        await loadAvatar(currentUser.id);
+        connectWebSocket();
+      } catch (error) {
+        console.error('Error en autenticación:', error.message);
+        if (error.message === 'Usuario ya existe') {
+          authError.textContent = 'El nombre de usuario ya está en uso. Por favor, elige otro.';
+        } else {
+          authError.textContent = error.message;
+        }
+        authError.style.display = 'block';
+      }
+    }
+
+    function updateProfilePreview() {
+      const displayName = document.getElementById('display-name').value;
+      const pronouns = document.getElementById('pronouns').value;
+      document.getElementById('preview-name').textContent = displayName;
+      document.getElementById('preview-pronouns').textContent = pronouns || '';
+    }
+
+    async function loadFriends() {
+      console.log(`Cargando amigos para userId: ${currentUser.id}`);
+      try {
+        const response = await fetch(`http://localhost:3000/api/friends/${currentUser.id}`);
+        const friends = await response.json();
+        const friendsList = document.getElementById('friends-list');
+        friendsList.innerHTML = '';
+
+        if (friends.length === 0) {
+          console.log('No se encontraron amigos para este usuario.');
+        } else {
+          console.log('Amigos encontrados:', friends);
+        }
+
+        friends.forEach(friend => {
+          const friendItem = document.createElement('div');
+          friendItem.className = 'friend-item';
+          const isOnline = friendStatuses[friend.id] || false;
+          friendItem.innerHTML = `
+            <div class="friend-avatar">
+              <div class="status-dot ${isOnline ? 'bg-green-500' : 'bg-gray-500'}"></div>
+            </div>
+            <span>${friend.displayName || friend.username}</span>
+          `;
+          friendItem.onclick = () => selectFriend(friend);
+          friendsList.appendChild(friendItem);
+        });
+      } catch (error) {
+        console.error('Error al cargar amigos:', error.message);
+      }
+    }
+
+    async function selectFriend(friend) {
+      currentFriend = friend;
+      console.log('Amigo seleccionado:', currentFriend);
+      document.getElementById('channel-name').textContent = `Chat con ${friend.displayName || friend.username}`;
+      showView('chat');
+      await loadMessages();
+      updateCallButtons();
+    }
+
+    function updateCallButtons() {
+      const isOnline = friendStatuses[currentFriend?.id] || false;
+      videoCallBtn.disabled = !isOnline;
+      voiceCallBtn.disabled = !isOnline;
+      if (isOnline) {
+        videoCallBtn.classList.add('active');
+        voiceCallBtn.classList.add('active');
+      } else {
+        videoCallBtn.classList.remove('active');
+        voiceCallBtn.classList.remove('active');
+      }
+    }
+
+    async function loadMessages() {
+      if (!currentFriend) {
+        console.log('No se ha seleccionado un amigo para cargar mensajes.');
+        return;
+      }
+      console.log(`Cargando mensajes entre userId=${currentUser.id} y friendId=${currentFriend.id}`);
+      try {
+        const response = await fetch(`http://localhost:3000/api/messages?userId=${currentUser.id}&friendId=${currentFriend.id}`);
+        const messages = await response.json();
+        const messagesDiv = document.getElementById('messages');
+        messagesDiv.innerHTML = '';
+
+        if (messages.length === 0) {
+          console.log('No hay mensajes entre estos usuarios.');
+        } else {
+          console.log('Mensajes cargados:', messages);
+        }
+
+        messages.forEach(msg => {
+          const messageDiv = document.createElement('div');
+          messageDiv.className = 'chat-message';
+          messageDiv.innerHTML = `
+            <div class="friend-avatar"></div>
+            <div class="message-content">
+              <span class="username">${msg.sender}</span>
+              <span class="timestamp">${new Date(msg.timestamp).toLocaleTimeString()}</span>
+              <p>${msg.content}</p>
+            </div>
+          `;
+          messagesDiv.appendChild(messageDiv);
+        });
+
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      } catch (error) {
+        console.error('Error al cargar mensajes:', error.message);
+      }
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const content = input.value.trim();
+      if (!content || !currentFriend) {
+        console.log('No se puede enviar mensaje: contenido vacío o no hay amigo seleccionado.');
+        return;
+      }
+
+      console.log(`Enviando mensaje de userId=${currentUser.id} a friendId=${currentFriend.id}: ${content}`);
+      try {
+        const response = await fetch('http://localhost:3000/api/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            senderId: currentUser.id,
+            receiverId: currentFriend.id,
+            content,
+          }),
+        });
+        const message = await response.json();
+        if (!response.ok) {
+          throw new Error('Error al enviar el mensaje');
+        }
+        console.log('Mensaje enviado:', message);
+        input.value = '';
+        await loadMessages();
+      } catch (error) {
+        console.error('Error al enviar mensaje:', error.message);
+      }
+    }
+
+    function connectWebSocket() {
+      console.log('Intentando conectar al WebSocket...');
+      ws = new WebSocket('ws://localhost:3000');
+      ws.onopen = () => {
+        console.log('WebSocket conectado');
+        ws.send(JSON.stringify({ type: 'auth', userId: currentUser.id }));
+      };
+      ws.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+        console.log('Mensaje recibido del WebSocket:', data);
+        if (data.type === 'message' && currentFriend && (data.message.senderId === currentFriend.id || data.message.receiverId === currentFriend.id)) {
+          loadMessages();
+        } else if (data.type === 'status') {
+          friendStatuses[data.userId] = data.isOnline;
+          await loadFriends();
+          if (currentFriend && data.userId === currentFriend.id) {
+            updateCallButtons();
+          }
+        } else if (data.type === 'call-request') {
+          const response = await fetch(`http://localhost:3000/api/user/${data.callerId}`);
+          const caller = await response.json();
+          currentCall = { callerId: data.callerId, callType: data.callType };
+          callerNameSpan.textContent = caller.displayName || caller.username;
+          incomingCallModal.classList.remove('hidden');
+          console.log('Llamada entrante de:', data.callerId);
+        } else if (data.type === 'call-response') {
+          if (data.accepted) {
+            await createOffer(data.receiverId);
+            console.log('Llamada aceptada por:', data.receiverId);
+          } else {
+            alert('El usuario rechazó la llamada');
+            resetCallState();
+            console.log('Llamada rechazada por:', data.receiverId);
+          }
+        } else if (data.type === 'call-busy') {
+          alert('El usuario está ocupado en otra llamada');
+          resetCallState();
+        } else if (data.type === 'call-unavailable') {
+          alert('El usuario no está disponible');
+          resetCallState();
+        } else if (data.type === 'call-offer') {
+          await handleOffer(data.callerId, data.offer);
+        } else if (data.type === 'call-answer') {
+          await handleAnswer(data.answer);
+        } else if (data.type === 'ice-candidate') {
+          await handleIceCandidate(data.candidate);
+        } else if (data.type === 'call-end') {
+          endCall();
+        }
+      };
+      ws.onerror = (error) => {
+        console.error('Error en WebSocket:', error);
+      };
+      ws.onclose = () => {
+        console.log('WebSocket desconectado, intentando reconectar...');
+        setTimeout(connectWebSocket, 3000);
+      };
+    }
+
+    async function startCall(friendId, callType) {
+      videoCallBtn.disabled = true;
+      voiceCallBtn.disabled = true;
+
+      currentCall = { receiverId: friendId, callType };
+      await setupLocalStream(callType);
+
+      ws.send(JSON.stringify({
+        type: 'call-request',
+        callerId: currentUser.id,
+        receiverId: friendId,
+        callType: callType,
+      }));
+      console.log(`Solicitud de ${callType} enviada a ${friendId}`);
+    }
+
+    async function setupLocalStream(callType) {
+      try {
+        const constraints = {
+          video: callType === 'video',
+          audio: true,
+        };
+        localStream = await navigator.mediaDevices.getUserMedia(constraints);
+        localVideo.srcObject = localStream;
+
+        peerConnection = new RTCPeerConnection(configuration);
+
+        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+        remoteStream = new MediaStream();
+        remoteVideo.srcObject = remoteStream;
+        peerConnection.ontrack = (event) => {
+          event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
+        };
+
+        peerConnection.onicecandidate = (event) => {
+          if (event.candidate) {
+            ws.send(JSON.stringify({
+              type: 'ice-candidate',
+              sourceId: currentUser.id,
+              targetId: currentCall.receiverId || currentCall.callerId,
+              candidate: event.candidate,
+            }));
+          }
+        };
+
+        peerConnection.oniceconnectionstatechange = () => {
+          if (peerConnection.iceConnectionState === 'disconnected') {
+            endCall();
+          }
+        };
+
+        callInterface.classList.remove('hidden');
+      } catch (error) {
+        console.error('Error al configurar el stream local:', error);
+        alert('No se pudo acceder a la cámara/micrófono. Por favor, verifica los permisos.');
+        endCall();
+      }
+    }
+
+    async function createOffer(receiverId) {
+      try {
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        ws.send(JSON.stringify({
+          type: 'call-offer',
+          callerId: currentUser.id,
+          receiverId: receiverId,
+          offer: offer,
+        }));
+      } catch (error) {
+        console.error('Error al crear oferta SDP:', error);
+        endCall();
+      }
+    }
+
+    async function handleOffer(callerId, offer) {
+      try {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        ws.send(JSON.stringify({
+          type: 'call-answer',
+          callerId: callerId,
+          receiverId: currentUser.id,
+          answer: answer,
+        }));
+      } catch (error) {
+        console.error('Error al manejar oferta SDP:', error);
+        endCall();
+      }
+    }
+
+    async function handleAnswer(answer) {
+      try {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+      } catch (error) {
+        console.error('Error al manejar respuesta SDP:', error);
+        endCall();
+      }
+    }
+
+    async function handleIceCandidate(candidate) {
+      try {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch (error) {
+        console.error('Error al manejar candidato ICE:', error);
+      }
+    }
+
+    async function acceptCall() {
+      incomingCallModal.classList.add('hidden');
+      await setupLocalStream(currentCall.callType);
+      ws.send(JSON.stringify({
+        type: 'call-response',
+        callerId: currentCall.callerId,
+        receiverId: currentUser.id,
+        accepted: true,
+      }));
+    }
+
+    function rejectCall() {
+      incomingCallModal.classList.add('hidden');
+      ws.send(JSON.stringify({
+        type: 'call-response',
+        callerId: currentCall.callerId,
+        receiverId: currentUser.id,
+        accepted: false,
+      }));
+      currentCall = null;
+    }
+
+    async function endCall() {
+      if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+      }
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+      }
+      if (remoteStream) {
+        remoteStream.getTracks().forEach(track => track.stop());
+        remoteStream = null;
+      }
+      localVideo.srcObject = null;
+      remoteVideo.srcObject = null;
+      callInterface.classList.add('hidden');
+
+      if (currentFriend) {
+        updateCallButtons();
+      }
+
+      if (currentCall) {
+        const peerId = currentCall.callerId || currentCall.receiverId;
+        ws.send(JSON.stringify({
+          type: 'call-end',
+          callerId: currentUser.id,
+          receiverId: peerId,
+        }));
+        currentCall = null;
+      }
+    }
+
+    async function resetCallState() {
+      currentCall = null;
+      callInterface.classList.add('hidden');
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+      }
+      if (remoteStream) {
+        remoteStream.getTracks().forEach(track => track.stop());
+        remoteStream = null;
+      }
+      localVideo.srcObject = null;
+      remoteVideo.srcObject = null;
+
+      if (currentFriend) {
+        updateCallButtons();
+      }
+    }
+
+    function showView(view) {
+      console.log('Mostrando vista:', view);
+      document.getElementById('chat-view').classList.add('hidden');
+      document.getElementById('feed-view').classList.add('hidden');
+      document.getElementById(`${view}-view`).classList.remove('hidden');
+    }
+
+    function searchVideos() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const videos = document.querySelectorAll('#video-list > div');
+      videos.forEach(video => {
+        const user = video.dataset.user.toLowerCase();
+        const description = video.dataset.description.toLowerCase();
+        if (user.includes(query) || description.includes(query)) {
+          video.style.display = 'flex';
+        } else {
+          video.style.display = 'none';
+        }
+      });
+    }
+
+    function selectServer(serverId) {
+      console.log('Seleccionando servidor:', serverId);
+      document.querySelectorAll('.server-icon').forEach(icon => icon.classList.remove('active'));
+      document.querySelector(`.server-icon[onclick="selectServer(${serverId})"]`).classList.add('active');
+    }
+
+    async function addFriend() {
+      console.log('Abriendo modal para agregar amigo');
+      document.getElementById('add-friend-modal').style.display = 'flex';
+      document.getElementById('friend-search-input').value = '';
+      document.getElementById('search-results').innerHTML = '';
+    }
+
+    function closeAddFriendModal() {
+      console.log('Cerrando modal de agregar amigo');
+      document.getElementById('add-friend-modal').style.display = 'none';
+    }
+
+    async function searchUsers() {
+      const query = document.getElementById('friend-search-input').value;
+      console.log(`Buscando usuarios con query: ${query}`);
+      if (!query) {
+        document.getElementById('search-results').innerHTML = '';
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/users?query=${query}&userId=${currentUser.id}`);
+        const users = await response.json();
+        const searchResults = document.getElementById('search-results');
+        searchResults.innerHTML = '';
+
+        if (users.length === 0) {
+          console.log('No se encontraron usuarios para la búsqueda.');
+        } else {
+          console.log('Usuarios encontrados:', users);
+        }
+
+        users.forEach(user => {
+          const userDiv = document.createElement('div');
+          userDiv.className = 'search-result';
+          userDiv.innerHTML = `
+            <span>${user.username}</span>
+            <button onclick="addFriendRequest(${user.id})">Agregar</button>
+          `;
+          searchResults.appendChild(userDiv);
+        });
+      } catch (error) {
+        console.error('Error al buscar usuarios:', error.message);
+      }
+    }
+
+    async function addFriendRequest(friendId) {
+      console.log(`Enviando solicitud de amistad a friendId=${friendId}`);
+      try {
+        const response = await fetch('http://localhost:3000/api/friends', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: currentUser.id, friendId }),
+        });
+        if (!response.ok) {
+          throw new Error('Error al agregar amigo');
+        }
+        console.log('Solicitud de amistad enviada con éxito');
+        await loadFriends();
+        closeAddFriendModal();
+      } catch (error) {
+        console.error('Error al agregar amigo:', error.message);
+      }
+    }
+
+    function toggleSidebar() {
+      console.log('Alternando barra lateral');
+      const sidebar = document.getElementById('sidebar');
+      const serverSidebar = document.getElementById('server-sidebar');
+      sidebar.classList.toggle('open');
+      serverSidebar.classList.toggle('open');
+    }
+
+    function joinVoiceCall() {
+      console.log('Uniéndose a llamada de voz');
+      document.getElementById('voice-call-popup').style.display = 'flex';
+      document.getElementById('voice-call-minimized').style.display = 'none';
+    }
+
+    function minimizeCall() {
+      console.log('Minimizando llamada de voz');
+      document.getElementById('voice-call-popup').style.display = 'none';
+      document.getElementById('voice-call-minimized').style.display = 'block';
+    }
+
+    function restoreCall() {
+      console.log('Restaurando llamada de voz');
+      document.getElementById('voice-call-popup').style.display = 'flex';
+      document.getElementById('voice-call-minimized').style.display = 'none';
+    }
+
+    function leaveCall() {
+      console.log('Saliendo de la llamada de voz');
+      document.getElementById('voice-call-popup').style.display = 'none';
+      document.getElementById('voice-call-minimized').style.display = 'none';
+    }
+
+    function logout() {
+      console.log('Cerrando sesión');
+      currentUser = null;
+      currentFriend = null;
+      if (ws) ws.close();
+      document.getElementById('root').classList.add('hidden');
+      document.getElementById('landing-screen').style.display = 'flex';
+      document.getElementById('avatar-preview').src = '/default-avatar.png';
+    }
+
+    const avatarUpload = document.getElementById('avatar-upload');
+    const avatarPreview = document.getElementById('avatar-preview');
+    const changeAvatarBtn = document.getElementById('change-avatar-btn');
+    const deleteAvatarBtn = document.getElementById('delete-avatar-btn');
+
+    changeAvatarBtn.addEventListener('click', () => {
+      avatarUpload.click();
+    });
+
+    avatarUpload.addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecciona un archivo de imagen (PNG, JPEG, etc.).');
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        alert('El archivo es demasiado grande. El límite es 5MB.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        avatarPreview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+
+      if (!currentUser) {
+        alert('Debes estar logueado para cambiar tu avatar.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('avatar', file);
+      formData.append('userId', currentUser.id);
+
+      try {
+        const response = await fetch('/api/upload-avatar', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          console.log('Avatar actualizado con éxito:', data.avatarUrl);
+          currentUser.avatar = data.avatarUrl;
+        } else {
+          throw new Error(data.error || 'Error al subir el avatar');
+        }
+      } catch (error) {
+        console.error('Error al subir el avatar:', error.message);
+        alert('Hubo un error al subir el avatar. Por favor, intenta de nuevo.');
+      }
+    });
+
+    deleteAvatarBtn.addEventListener('click', async () => {
+      if (!currentUser) {
+        alert('Debes estar logueado para eliminar tu avatar.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/delete-avatar/${currentUser.id}`, {
+          method: 'DELETE',
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          console.log('Avatar eliminado con éxito');
+          avatarPreview.src = '/default-avatar.png';
+          currentUser.avatar = null;
+        } else {
+          throw new Error(data.error || 'Error al eliminar el avatar');
+        }
+      } catch (error) {
+        console.error('Error al eliminar el avatar:', error.message);
+        alert('Hubo un error al eliminar el avatar. Por favor, intenta de nuevo.');
+      }
+    });
+  </script>
+</body>
+</html>
